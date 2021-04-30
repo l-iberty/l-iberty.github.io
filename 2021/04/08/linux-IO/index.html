@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>linux IO | Welcome to l-iberty&#39;s blog ^_^</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="阻塞IO vs. 非阻塞IO阻塞IO：当没有数据可读时内核会一直等待数据，直到数据准备好后再将数据拷贝到进程空间，然后IO系统调用返回，解除进程的阻塞。 非阻塞IO：当没有数据可读时IO系统调用会给进程返回一个错误而不会阻塞，当进程再次发起IO系统调用时，如果内核缓冲区有数据，内核就会把数据拷贝到进程空间。非阻塞IO的编程特点：需要进程轮询调用。 例子：在一个典型的 socket 服务端程序中通常">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux IO">
+<meta property="og:url" content="http://yoursite.com/2021/04/08/linux-IO/index.html">
+<meta property="og:site_name" content="Welcome to l-iberty&#39;s blog ^_^">
+<meta property="og:description" content="阻塞IO vs. 非阻塞IO阻塞IO：当没有数据可读时内核会一直等待数据，直到数据准备好后再将数据拷贝到进程空间，然后IO系统调用返回，解除进程的阻塞。 非阻塞IO：当没有数据可读时IO系统调用会给进程返回一个错误而不会阻塞，当进程再次发起IO系统调用时，如果内核缓冲区有数据，内核就会把数据拷贝到进程空间。非阻塞IO的编程特点：需要进程轮询调用。 例子：在一个典型的 socket 服务端程序中通常">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/04/08/linux-IO/block_io.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/08/linux-IO/nonblock_io.png">
+<meta property="article:published_time" content="2021-04-08T14:08:48.000Z">
+<meta property="article:modified_time" content="2021-04-11T09:23:49.960Z">
+<meta property="article:author" content="l-iberty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/04/08/linux-IO/block_io.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Welcome to l-iberty&#39;s blog ^_^" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Welcome to l-iberty&#39;s blog ^_^</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-linux-IO" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/08/linux-IO/" class="article-date">
+  <time datetime="2021-04-08T14:08:48.000Z" itemprop="datePublished">2021-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      linux IO
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="阻塞IO-vs-非阻塞IO"><a href="#阻塞IO-vs-非阻塞IO" class="headerlink" title="阻塞IO vs. 非阻塞IO"></a>阻塞IO vs. 非阻塞IO</h2><p><strong>阻塞IO</strong>：当没有数据可读时内核会一直等待数据，直到数据准备好后再将数据拷贝到进程空间，然后IO系统调用返回，解除进程的阻塞。<br><img src="/2021/04/08/linux-IO/block_io.png" alt></p>
+<p><strong>非阻塞IO</strong>：当没有数据可读时IO系统调用会给进程返回一个错误而不会阻塞，当进程再次发起IO系统调用时，如果内核缓冲区有数据，内核就会把数据拷贝到进程空间。非阻塞IO的编程特点：需要进程轮询调用。<br><img src="/2021/04/08/linux-IO/nonblock_io.png" alt></p>
+<p>例子：在一个典型的 socket 服务端程序中通常会有这样的代码片段：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ((s = <span class="built_in">read</span>(pfds[i].fd, buf, BUF_SIZE)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"\nReceived data from client %.*s"</span>, (<span class="keyword">int</span>)s, buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果连接套接字是<em>阻塞</em>模式, 当数据读完后 read 会阻塞, 直到该连接上的客户端重新发送数据. 结果就是程序不能继续处理新的客户端连接, 因为程序被阻塞在这里了. 所以我们通常会把连接套接字设置成<em>非阻塞</em>模式:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">setnonblocking</span><span class="params">(<span class="keyword">int</span> sock)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> opts;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取sock的文件状态标志</span></span><br><span class="line">  opts = fcntl(sock, F_GETFL);</span><br><span class="line">  <span class="keyword">if</span> (opts == <span class="number">-1</span>) &#123;</span><br><span class="line">    perror(<span class="string">"fcntl(sock, F_GETFL)"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 设置非阻塞I/O</span></span><br><span class="line">  opts = opts | O_NONBLOCK;</span><br><span class="line">  <span class="keyword">if</span> (fcntl(sock, F_SETFL, opts) == <span class="number">-1</span>) &#123;</span><br><span class="line">    perror(<span class="string">"fcntl(sock,F_SETFL,opts)"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2><p>简言之就是让一个进程同时监控多个文件描述符，当任意一个文件描述符可读写时解除进程的阻塞。IO多路复用是以<code>select</code>、<code>poll</code>、<code>epoll</code>为基础的。</p>
+<h3 id="select-amp-poll"><a href="#select-amp-poll" class="headerlink" title="select &amp; poll"></a><code>select</code> &amp; <code>poll</code></h3><p><code>select</code>和<code>poll</code>非常相似，二者的不同在于保存文件描述符的方式：</p>
+<ul>
+<li><code>select</code>使用<code>fd_set</code>结构：<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* The fd_set member is required to be an array of longs.  */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">int</span> __fd_mask;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* fd_set for select and pselect.  */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">   __fd_mask fds_bits[__FD_SETSIZE / __NFDBITS];</span><br><span class="line">&#125; fd_set;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>这是一个长度固定的数组，所以可保存的文件描述符个数是有限的。</p>
+<ul>
+<li><code>poll</code>使用的是<code>pollfd</code>结构的变长数组，所以支持的最大文件描述符的数量就是OS支持的最大打开文件描述符的数量。</li>
+</ul>
+<p><code>select</code>和<code>poll</code>都采用“<strong>水平触发</strong>”，如果报告了fd后没有被处理，或者没有把数据全部读完，那么下次<code>select/poll</code>时会再次报告该fd。</p>
+<h3 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a><code>epoll</code></h3><p><code>epoll</code>可以理解为event poll，是<strong>事件驱动</strong>的。一下内容摘自Linux manual page 对<code>epoll</code>的说明。</p>
+<p>The <strong>epoll</strong> API performs a similar task to <strong>poll</strong>: monitoring multiple file descriptors to see if I/O is possible on any of them. The <strong>epoll</strong> API can be used either as an <em>edge-triggered</em> or a <em>level-triggered</em> interface and scales well to large numbers of watched file descriptors.</p>
+<p>The central concept of the epoll API is the <strong>epoll</strong> instance, an in-kernel data structure which, from a user-space perspective, can be considered as a container for two lists:</p>
+<ul>
+<li>The <em>interest</em> list (sometimes also called the <strong>epoll</strong> set): the set of file descriptors that the process has registered an interest in monitoring.</li>
+<li>The <em>ready</em> list: the set of file descriptors that are “ready” for I/O.  The ready list is a subset of (or, more precisely, a set of references to) the file descriptors in the interest list.  The ready list is dynamically populated by the kernel as a result of I/O activity on those file descriptors.</li>
+</ul>
+<h4 id="Level-triggered-and-edge-triggered"><a href="#Level-triggered-and-edge-triggered" class="headerlink" title="Level-triggered and edge-triggered"></a>Level-triggered and edge-triggered</h4><p>The <strong>epoll</strong> event distribution interface is able to behave both as edge-triggered (ET) and as level-triggered (LT). The difference between the two mechanisms can be described as follows.  Suppose that this scenario happens:</p>
+<ol>
+<li>The file descriptor that represents the read side of a pipe (<em>rfd</em>) is registered on the <strong>epoll</strong> instance.</li>
+<li>A pipe writer writes 2 kB of data on the write side of the pipe.</li>
+<li>A call to <strong>epoll_wait</strong> is done that will return <em>rfd</em> as a ready file descriptor.</li>
+<li>The pipe reader reads 1 kB of data from <em>rfd</em>.</li>
+<li>A call to <strong>epoll_wait</strong> is done.</li>
+</ol>
+<p>If the <em>rfd</em> file descriptor has been added to the <strong>epoll</strong> interface using the <strong>EPOLLET</strong> (edge-triggered) flag, the call to <strong>epoll_wait</strong> done in step 5 will probably hang despite the available data still present in the file input buffer; meanwhile the remote peer might be expecting a response based on the data it already sent.  The reason for this is that edge-triggered mode delivers events only when changes occur on the monitored file descriptor.  So, in step 5 the caller might end up waiting for some data that is already present inside the input buffer.  In the above example, an event on <em>rfd</em> will be generated because of the write done in 2 and the event is consumed in 3.  Since the read operation done in 4 does not consume the whole buffer data, the call to <strong>epoll_wait</strong> done in step 5 might block indefinitely.</p>
+<p>An application that employs the <strong>EPOLLET</strong> flag should use nonblocking file descriptors to avoid having a blocking read or write starve a task that is handling multiple file descriptors. The suggested way to use epoll as an edge-triggered (<strong>EPOLLET</strong>) interface is as follows:</p>
+<p>a) with nonblocking file descriptors; and<br>b) by waiting for an event only after <strong>read</strong> or <strong>write</strong> return <strong>EAGAIN</strong>.</p>
+<p>By contrast, when used as a level-triggered interface (the default, when <strong>EPOLLET</strong> is not specified), <strong>epoll</strong> is simply a faster <strong>poll</strong>, and can be used wherever the latter is used since it shares the same semantics.</p>
+<p>If multiple threads (or processes, if child processes have inherited the epoll file descriptor across <strong>fork</strong>) are blocked in <strong>epoll_wait</strong> waiting on the same epoll file descriptor and a file descriptor in the interest list that is marked for edge- triggered (<strong>EPOLLET</strong>) notification becomes ready, just one of the threads (or processes) is awoken from <strong>epoll_wait</strong>.  This provides a useful optimization for avoiding “thundering herd” wake-ups in some scenarios.</p>
+<h4 id="Questions-and-answers"><a href="#Questions-and-answers" class="headerlink" title="Questions and answers"></a>Questions and answers</h4><ol>
+<li><p>What happens if you register the same file descriptor on an <strong>epoll</strong> instance twice?<br>You will probably get <strong>EEXIST</strong>.  However, it is possible to add a duplicate (<strong>dup</strong>, <strong>dup2</strong>, <strong>fcntl</strong> <strong>F_DUPFD</strong>) file descriptor to the same <strong>epoll</strong> instance.  This can be a useful technique for filtering events, if the duplicate file descriptors are registered with different events masks.</p>
+</li>
+<li><p>Can two <strong>epoll</strong> instances wait for the same file descriptor? If so, are events reported to both <strong>epoll</strong> file descriptors?<br>Yes, and events would be reported to both.  However, careful programming may be needed to do this correctly.</p>
+</li>
+<li><p>Is the <strong>epoll</strong> file descriptor itself poll/epoll/selectable?<br>Yes.  If an <strong>epoll</strong> file descriptor has events waiting, then it will indicate as being readable.</p>
+</li>
+<li><p>What happens if one attempts to put an <strong>epoll</strong> file descriptor into its own file descriptor set?<br>The <strong>epoll_ctl</strong> call fails (<strong>EINVAL</strong>).  However, you can add an <strong>epoll</strong> file descriptor inside another <strong>epoll</strong> file descriptor set.</p>
+</li>
+<li><p>Can I send an <strong>epoll</strong> file descriptor over a UNIX domain socket to another process?<br>Yes, but it does not make sense to do this, since the receiving process would not have copies of the file descriptors in the interest list.</p>
+</li>
+<li><p>Will closing a file descriptor cause it to be removed from all <strong>epoll</strong> interest lists?<br>A file descriptor is removed from an interest list only after all the file descriptors referring to the underlying open file description have been closed.  This means that even after a file descriptor that is part of an interest list has been closed, events may be reported for that file descriptor if other file descriptors referring to the same underlying file description remain open.  To prevent this happening, the file descriptor must be explicitly removed from the interest list (using <strong>epoll_ctl</strong> <strong>EPOLL_CTL_DEL</strong>) before it is duplicated.</p>
+</li>
+<li><p>If more than one event occurs between <strong>epoll_wait</strong> calls, are they combined or reported separately?<br>They will be combined.</p>
+</li>
+</ol>
+<hr>
+<ul>
+<li><code>epoll</code>底层使用红黑树管理文件描述符，那么为什么不用哈希表？<br>因为内核里有现成的红黑数而没有通用的哈希表。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/04/08/linux-IO/" data-id="cko412q4j0009t4rtam6wbcr3" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          设计模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/03/15/MIT6-824%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8FKV%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MIT6.824的分布式KV存储系统的一致性问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">April 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/04/30/MySQL/">MySQL</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/27/CPU%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/">CPU分支预测对性能的影响</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/linux-IO/">linux IO</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/15/MIT6-824%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8FKV%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">MIT6.824的分布式KV存储系统的一致性问题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 l-iberty<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

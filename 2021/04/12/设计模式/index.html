@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>设计模式 | Welcome to l-iberty&#39;s blog ^_^</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1.单例模式 传统实现 使用智能指针 多线程场景的问题 一种更加简洁高效的实现: Meyers’ Singleton    单例模式单例属于创建型模式，它提供了一种创建对象的方式。单例模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。特点：a) 单例类只能有一个实例b) 单例类必须自己创建自己">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式">
+<meta property="og:url" content="http://yoursite.com/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Welcome to l-iberty&#39;s blog ^_^">
+<meta property="og:description" content="1.单例模式 传统实现 使用智能指针 多线程场景的问题 一种更加简洁高效的实现: Meyers’ Singleton    单例模式单例属于创建型模式，它提供了一种创建对象的方式。单例模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。特点：a) 单例类只能有一个实例b) 单例类必须自己创建自己">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-12T02:03:26.000Z">
+<meta property="article:modified_time" content="2021-04-12T14:13:39.894Z">
+<meta property="article:author" content="l-iberty">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Welcome to l-iberty&#39;s blog ^_^" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Welcome to l-iberty&#39;s blog ^_^</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-设计模式" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time datetime="2021-04-12T02:03:26.000Z" itemprop="datePublished">2021-04-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      设计模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><a href="#单例模式">1.单例模式</a><ul>
+<li><a href="#传统实现">传统实现</a></li>
+<li><a href="#使用智能指针">使用智能指针</a></li>
+<li><a href="#多线程场景的问题">多线程场景的问题</a></li>
+<li><a href="#一种更加简洁高效的实现:%20Meyers'%20Singleton">一种更加简洁高效的实现: Meyers’ Singleton</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><p>单例属于创建型模式，它提供了一种创建对象的方式。单例模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。<br><strong>特点：</strong><br>a) 单例类只能有一个实例<br>b) 单例类必须自己创建自己的唯一实例<br>c) 单例类必须给外界提供这一实例<br><strong>意图：</strong>保证一个类仅有一个实例，并提供一个访问它的全局访问点<br><strong>主要解决：</strong>一个全局使用的类频繁地创建与销毁<br><strong>何时使用：</strong>当您想控制实例数目，节省系统资源的时候<br><strong>如何实现：</strong>判断系统是否已经有这个单例类实例，如果有则返回，如果没有则创建<br><strong>关键代码：</strong>构造函数私有化（如果是C++实现还需要禁用拷贝语义）</p>
+<h3 id="传统实现"><a href="#传统实现" class="headerlink" title="传统实现"></a>传统实现</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleObject</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 构造函数为 private, 这样外界就不能创建该类的实例</span></span><br><span class="line">  SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"constructor invoked\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 该类的唯一静态实例</span></span><br><span class="line">  <span class="keyword">static</span> SingleObject *instance_;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 禁用拷贝语义</span></span><br><span class="line">  SingleObject(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line">  SingleObject &amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 析构函数为 public</span></span><br><span class="line">  ~SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"deconstructor invoked. instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取该类的唯一静态实例</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> SingleObject *<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (instance_ == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">      instance_ = <span class="keyword">new</span> SingleObject;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> instance_;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">ShowMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">SingleObject *SingleObject::instance_ = <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  SingleObject *obj1 = SingleObject::GetInstance();</span><br><span class="line">  SingleObject *obj2 = SingleObject::GetInstance();</span><br><span class="line">  obj1-&gt;ShowMessage();</span><br><span class="line">  obj2-&gt;ShowMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">instance address: 0x00795D58</span><br><span class="line">instance address: 0x00795D58</span><br></pre></td></tr></table></figure>
+
+<p>从输出结果可知，<code>SingleObject</code>只被实例化了一次，并且两次调用<code>SingleObject::GetInstance()</code>返回的都是同一个实例，符合单例模式的语义。</p>
+<p>上述代码存在的问题是，<code>SingleObject</code>的“唯一静态实例”没有被<code>delete</code>。如果在<code>main()</code>里面<code>delete</code>要怎么实现（在析构函数为<code>public</code>的前提下）？有两种写法：</p>
+<p>代码1.1：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  SingleObject *obj1 = SingleObject::GetInstance();</span><br><span class="line">  SingleObject *obj2 = SingleObject::GetInstance();</span><br><span class="line">  obj1-&gt;ShowMessage();</span><br><span class="line">  obj2-&gt;ShowMessage();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span> obj1;</span><br><span class="line">  <span class="comment">// 或者 delete obj2;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码1.2：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  SingleObject *obj1 = SingleObject::GetInstance();</span><br><span class="line">  SingleObject *obj2 = SingleObject::GetInstance();</span><br><span class="line">  obj1-&gt;ShowMessage();</span><br><span class="line">  obj2-&gt;ShowMessage();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span> SingleObject::GetInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码1.1的问题是，<code>obj1</code>和<code>obj2</code>都指向一个对象，所以只能<code>delete</code>一个，否则会发生<em>double free</em>。这使得代码写起来很混乱，需要外界清楚单例模式的实现细节。代码1.2较简洁一些，但仍需外界清楚单例模式的实现细节。我们希望在<code>main()</code>里不编写<code>delete</code>语句的前提下完成对象的释放，一种解决方法是使用智能指针，如下所示：</p>
+<h3 id="使用智能指针"><a href="#使用智能指针" class="headerlink" title="使用智能指针"></a>使用智能指针</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleObject</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 构造函数为 private, 这样外界就不能创建该类的实例</span></span><br><span class="line">  SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"constructor invoked\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 该类的唯一静态实例</span></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt; instance_;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 禁用拷贝语义</span></span><br><span class="line">  SingleObject(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line">  SingleObject &amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 析构函数为 public</span></span><br><span class="line">  ~SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"deconstructor invoked. instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取该类的唯一静态实例</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> SingleObject *<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (instance_.get() == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">      instance_ = <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt;(<span class="keyword">new</span> SingleObject);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> instance_.get();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">ShowMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt; SingleObject::instance_&#123; <span class="literal">nullptr</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  SingleObject *obj1 = SingleObject::GetInstance();</span><br><span class="line">  SingleObject *obj2 = SingleObject::GetInstance();</span><br><span class="line">  obj1-&gt;ShowMessage();</span><br><span class="line">  obj2-&gt;ShowMessage();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">instance address: 0x008A5D58</span><br><span class="line">instance address: 0x008A5D58</span><br><span class="line">deconstructor invoked. instance address: 0x008A5D58</span><br></pre></td></tr></table></figure>
+
+<p>在这里，<code>SingleObject</code>的唯一静态实例<code>instance_</code>本质上是一个静态（全局）<code>std::shared_ptr</code>对象，而不再是一个<code>SingleObject</code>对象指针，所以可以利用程序最后析构全局对象的动作把<code>GetInstance()</code> <code>new</code>出来的<code>SingleObject</code>对象<code>delete</code>掉。</p>
+<p>至此通过智能指针实现了一个简单的单例模式。</p>
+<h3 id="多线程场景的问题"><a href="#多线程场景的问题" class="headerlink" title="多线程场景的问题"></a>多线程场景的问题</h3><p>在单线程场景下对<code>SingleObject</code>的唯一静态实例<code>instance_</code>的访问是没有问题的，但在多线程场景下会发生读写冲突，而且不能保证单例模式的语义。以下是对上述基于智能指针所实现的单例模式的多线程测试：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">enum</span> &#123;kThreads = <span class="number">4</span>&#125;;</span><br><span class="line">  <span class="built_in">std</span>::thread thds[kThreads];</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; kThreads; i++) &#123;</span><br><span class="line">    thds[i] = <span class="built_in">std</span>::thread([&amp;] &#123;</span><br><span class="line">      SingleObject *obj = SingleObject::GetInstance();</span><br><span class="line">      obj-&gt;ShowMessage();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; kThreads; i++) &#123;</span><br><span class="line">    thds[i].join();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">constructor invoked</span><br><span class="line">deconstructor invoked. instance address: 0x0034D7B8</span><br><span class="line">instance address: 0x0034D7B8</span><br><span class="line">constructor invoked</span><br><span class="line">instance address: 0x0034D7E8</span><br><span class="line">deconstructor invoked. instance address: 0x0034D7E8</span><br><span class="line">constructor invoked</span><br><span class="line">instance address: 0x0034D848</span><br><span class="line">deconstructor invoked. instance address: 0x0034D848</span><br><span class="line">instance address: 0x0034D818</span><br><span class="line">deconstructor invoked. instance address: 0x0034D818</span><br></pre></td></tr></table></figure>
+
+<p>显然创建了多个实例，不符合单例模式的语义。最简单的方式是加锁：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleObject</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 构造函数为 private, 这样外界就不能创建该类的实例</span></span><br><span class="line">  SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"constructor invoked\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 该类的唯一静态实例</span></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt; instance_;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::mutex mu_;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 禁用拷贝语义</span></span><br><span class="line">  SingleObject(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line">  SingleObject &amp;<span class="keyword">operator</span>=(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 析构函数为 public</span></span><br><span class="line">  ~SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"deconstructor invoked. instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取该类的唯一静态实例</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> SingleObject *<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; l(mu_);</span><br><span class="line">    <span class="keyword">if</span> (instance_.get() == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">      instance_ = <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt;(<span class="keyword">new</span> SingleObject);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> instance_.get();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">ShowMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt; SingleObject::instance_&#123; <span class="literal">nullptr</span> &#125;;</span><br><span class="line"><span class="built_in">std</span>::mutex SingleObject::mu_;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">enum</span> &#123;kThreads = <span class="number">4</span>&#125;;</span><br><span class="line">  <span class="built_in">std</span>::thread thds[kThreads];</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; kThreads; i++) &#123;</span><br><span class="line">    thds[i] = <span class="built_in">std</span>::thread([&amp;] &#123;</span><br><span class="line">      SingleObject *obj = SingleObject::GetInstance();</span><br><span class="line">      obj-&gt;ShowMessage();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; kThreads; i++) &#123;</span><br><span class="line">    thds[i].join();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">instance address: 0x0076D810</span><br><span class="line">instance address: 0x0076D810</span><br><span class="line">instance address: 0x0076D810</span><br><span class="line">instance address: 0x0076D810</span><br><span class="line">deconstructor invoked. instance address: 0x0076D810</span><br></pre></td></tr></table></figure>
+
+<p>上面这种在整个<code>GetInstance()</code>函数内加锁的方式虽然保证了线程安全，但是效率很低。<strong>Double-Checked Locking</strong>方法被广泛用于实现多线程环境下单例模式懒惰加载方式实现，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> SingleObject *<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (instance_.get() == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">    <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; l(mu_);</span><br><span class="line">    <span class="keyword">if</span> (instance_.get() == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">      instance_ = <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt;(<span class="keyword">new</span> SingleObject);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> instance_.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第4行的第2次<code>if</code>检查语句是必要的，否则会发生重复构造，进而产生内存泄漏。</p>
+<p>但是这样还不够。这种实现依赖于处理器的内存模型、编译器的重排序以及编译器和同步库之间的工作方式。在某些内存模型中（虽然不常见）或者是由于编译器的优化以及运行时优化等等原因，使得<code>instance_</code>虽然已经不是<code>nullptr</code>但是其所指对象还没有完成构造，这种情况下，另一个线程如果调用<code>GetInstance()</code>就有可能使用到一个不完全初始化的对象。换句话说，就是代码中第4行和第5行没有正确的同步，在某种情况下会出现<code>new</code>返回了地址赋值给<code>instance_</code>而<code>SingleObject</code>此时还没有构造完全，当另一个线程随后运行到第2行时将不会进入<code>if</code>从而返回了不完全的实例对象给用户使用，造成了严重的错误。</p>
+<p>要解决这个问题需要使用<code>std::atomic</code>提供的内存模型。先上代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleObject</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 构造函数为 private, 这样外界就不能创建该类的实例</span></span><br><span class="line">  SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"constructor invoked\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 该类的唯一静态实例</span></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::atomic&lt;<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt;&gt; instance_;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::mutex mu_;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 禁用拷贝语义</span></span><br><span class="line">  SingleObject(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line">  SingleObject &amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 析构函数为 public</span></span><br><span class="line">  ~SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"deconstructor invoked. instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取该类的唯一静态实例</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> SingleObject *<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 默认使用 memory_order_seq_cst, sequential consistency (顺序一致性)</span></span><br><span class="line">    SingleObject *obj;</span><br><span class="line">    <span class="keyword">if</span> ((obj = instance_.load().get()) == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">      <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; l(mu_);</span><br><span class="line">      <span class="keyword">if</span> ((obj = instance_.load().get()) == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        obj = <span class="keyword">new</span> SingleObject;</span><br><span class="line">        instance_.store(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt;(obj));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> obj;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">ShowMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::atomic&lt;<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;SingleObject&gt;&gt; SingleObject::instance_&#123; <span class="literal">nullptr</span> &#125;;</span><br><span class="line"><span class="built_in">std</span>::mutex SingleObject::mu_;</span><br></pre></td></tr></table></figure>
+
+<p>这里使用了<code>std::atomic</code>默认的<code>memory_order_seq_cst</code>内存模型（<code>load</code>需要等待<code>store</code>写完才能读取，所以叫“顺序一致性”）保证代码不会出现同步问题（至于为什么，我也不知道，涉及体系结构的细节，以上参考<a href="https://zhuanlan.zhihu.com/p/37469260" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/37469260</a>）。但是这样做又导致了一个严重错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">deconstructor invoked. instance address: 0x003AD810</span><br><span class="line">instance address: 0x003AD810</span><br><span class="line">instance address: 0x003AD810</span><br><span class="line">instance address: 0x003AD810</span><br><span class="line">instance address: 0x003AD810</span><br></pre></td></tr></table></figure>
+<p>析构函数竟然先执行了！怀疑是智能指针的问题，那么不用智能指针，向<code>SingleObject</code>内嵌一个<code>GC</code>类的静态实例进行<code>instance_</code>的析构吧：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleObject</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 构造函数为 private, 这样外界就不能创建该类的实例</span></span><br><span class="line">  SingleObject() &#123;</span><br><span class="line">    <span class="keyword">static</span> GC gc;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"constructor invoked\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 该类的唯一静态实例</span></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::atomic&lt;SingleObject*&gt; instance_;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> <span class="built_in">std</span>::mutex mu_;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">GC</span> &#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    GC() = <span class="keyword">default</span>;</span><br><span class="line">    ~GC() &#123;</span><br><span class="line">      SingleObject *obj = instance_.load();</span><br><span class="line">      <span class="keyword">if</span> (obj != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="keyword">delete</span> obj;</span><br><span class="line">        instance_.store(<span class="literal">nullptr</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    GC(<span class="keyword">const</span> GC &amp;g) = <span class="keyword">delete</span>;</span><br><span class="line">    GC&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> GC &amp;g) = <span class="keyword">delete</span>;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 禁用拷贝语义</span></span><br><span class="line">  SingleObject(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line">  SingleObject &amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 析构函数为 public</span></span><br><span class="line">  ~SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"deconstructor invoked. instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取该类的唯一静态实例</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> SingleObject *<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 默认使用 memory_order_seq_cst, sequential consistency (顺序一致性)</span></span><br><span class="line">    SingleObject *obj;</span><br><span class="line">    <span class="keyword">if</span> ((obj = instance_.load()) == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">      <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; l(mu_);</span><br><span class="line">      <span class="keyword">if</span> ((obj = instance_.load()) == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        obj = <span class="keyword">new</span> SingleObject;</span><br><span class="line">        instance_.store(obj);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> obj;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">ShowMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::atomic&lt;SingleObject*&gt; SingleObject::instance_&#123; <span class="literal">nullptr</span> &#125;;</span><br><span class="line"><span class="built_in">std</span>::mutex SingleObject::mu_;</span><br></pre></td></tr></table></figure>
+
+<p>可以得到正确的输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">instance address: 0x004CD810</span><br><span class="line">instance address: 0x004CD810</span><br><span class="line">instance address: 0x004CD810</span><br><span class="line">instance address: 0x004CD810</span><br><span class="line">deconstructor invoked. instance address: 0x004CD810</span><br></pre></td></tr></table></figure>
+
+<p>综上，利用“Double-Checked Locking+内存屏障”可以实现一个线程安全的单例模式。</p>
+<h3 id="一种更加简洁高效的实现-Meyers’-Singleton"><a href="#一种更加简洁高效的实现-Meyers’-Singleton" class="headerlink" title="一种更加简洁高效的实现: Meyers’ Singleton"></a>一种更加简洁高效的实现: Meyers’ Singleton</h3><p>来自<em>Effective C++</em> item 04，使用 local static 变量：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleObject</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// 构造函数为 private, 这样外界就不能创建该类的实例</span></span><br><span class="line">  SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"constructor invoked\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// 禁用拷贝语义</span></span><br><span class="line">  SingleObject(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line">  SingleObject &amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> SingleObject &amp;obj) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 析构函数为 public</span></span><br><span class="line">  ~SingleObject() &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"deconstructor invoked. instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取该类的唯一静态实例</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> SingleObject &amp;<span class="title">GetInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 仅当第一次调用该函数时执行 instance 的初始化</span></span><br><span class="line">    <span class="keyword">static</span> SingleObject instance;</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">ShowMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"instance address: 0x"</span> &lt;&lt; (<span class="keyword">void</span>*)<span class="keyword">this</span> &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">enum</span> &#123;kThreads = <span class="number">4</span>&#125;;</span><br><span class="line">  <span class="built_in">std</span>::thread thds[kThreads];</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; kThreads; i++) &#123;</span><br><span class="line">    thds[i] = <span class="built_in">std</span>::thread([&amp;] &#123;</span><br><span class="line">      SingleObject &amp;obj = SingleObject::GetInstance();</span><br><span class="line">      obj.ShowMessage();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; kThreads; i++) &#123;</span><br><span class="line">    thds[i].join();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">constructor invoked</span><br><span class="line">instance address: 0x00E24A5C</span><br><span class="line">instance address: 0x00E24A5C</span><br><span class="line">instance address: 0x00E24A5C</span><br><span class="line">instance address: 0x00E24A5C</span><br><span class="line">deconstructor invoked. instance address: 0x00E24A5C</span><br></pre></td></tr></table></figure>
+
+<p>该实现方式甚至保证了线程安全！世人以<em>Effective C++</em>一书的作者之名，将这种单例模式的实现命名为<em>Meyers’ Singleton</em>。</p>
+<p>注意，在C++11之前，多线程环境下local static对象的初始化并不是线程安全的。具体表现就是：如果一个线程正在执行local static对象的初始化语句但还没有完成，此时若其它线程也执行到该语句，那么这个线程会认为自己是第一次执行初始化并进入该local static对象的构造函数中。这会造成这个local static对象的重复构造，进而产生内存泄露问题。</p>
+<p>C++11则在语言规范中解决了这个问题。C++11规定，在一个线程开始local static对象的初始化后到完成初始化前，其他线程执行到这个local static对象的初始化语句就会等待，直到该local static对象初始化完成。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" data-id="cko412q4l000bt4rt1dja2ree" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/04/27/CPU%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          CPU分支预测对性能的影响
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/04/08/linux-IO/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">linux IO</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">April 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/04/30/MySQL/">MySQL</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/27/CPU%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/">CPU分支预测对性能的影响</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/linux-IO/">linux IO</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/15/MIT6-824%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8FKV%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">MIT6.824的分布式KV存储系统的一致性问题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 l-iberty<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

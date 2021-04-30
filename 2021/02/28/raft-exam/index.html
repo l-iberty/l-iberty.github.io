@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>raft_exam | Welcome to l-iberty&#39;s blog ^_^</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Raft user study  a. No. term必须满足单调递增。我在实现 Raft 时就曾出现这样的错误。在5个节点{A,B,C,D,E}的集群中Leader&#x3D;A，currentTerm&#x3D;1。假设出现了网络分区：{A,B,C}-{D,E}，此时{A,B,C}保持原来的状态不变(Leader&#x3D;A, currentTerm&#x3D;1)；{D,E}会开始新一轮选举，假设选举结果是Leader&#x3D;D，c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="raft_exam">
+<meta property="og:url" content="http://yoursite.com/2021/02/28/raft-exam/index.html">
+<meta property="og:site_name" content="Welcome to l-iberty&#39;s blog ^_^">
+<meta property="og:description" content="Raft user study  a. No. term必须满足单调递增。我在实现 Raft 时就曾出现这样的错误。在5个节点{A,B,C,D,E}的集群中Leader&#x3D;A，currentTerm&#x3D;1。假设出现了网络分区：{A,B,C}-{D,E}，此时{A,B,C}保持原来的状态不变(Leader&#x3D;A, currentTerm&#x3D;1)；{D,E}会开始新一轮选举，假设选举结果是Leader&#x3D;D，c">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/RequestVote.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/3.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/log_matching.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/4.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/5.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/6.png">
+<meta property="og:image" content="http://yoursite.com/2021/02/28/raft-exam/7.png">
+<meta property="article:published_time" content="2021-02-28T12:02:04.000Z">
+<meta property="article:modified_time" content="2021-03-04T11:30:31.475Z">
+<meta property="article:author" content="l-iberty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/02/28/raft-exam/1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Welcome to l-iberty&#39;s blog ^_^" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Welcome to l-iberty&#39;s blog ^_^</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-raft-exam" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/02/28/raft-exam/" class="article-date">
+  <time datetime="2021-02-28T12:02:04.000Z" itemprop="datePublished">2021-02-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      raft_exam
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="https://ongardie.net/static/raft/userstudy/" target="_blank" rel="noopener">Raft user study</a></p>
+<p><img src="/2021/02/28/raft-exam/1.png" alt></p>
+<p>a. No. <code>term</code>必须满足单调递增。我在实现 Raft 时就曾出现这样的错误。在5个节点<code>{A,B,C,D,E}</code>的集群中<code>Leader=A，currentTerm=1</code>。假设出现了网络分区：<code>{A,B,C}-{D,E}</code>，此时<code>{A,B,C}</code>保持原来的状态不变<code>(Leader=A, currentTerm=1)</code>；<code>{D,E}</code>会开始新一轮选举，假设选举结果是<code>Leader=D，currentTerm=2</code>。如果网络分区消失，5个节点重新组成一个集群，短期内会有2个 Leader：<code>A(currentTerm=1), D(currentTerm=2)</code>，由于 D 的<code>currentTerm</code>更大所以其余节点应该服从 D。A 在从<code>AppendEntries RPC</code>的 reply 里发现更大的<code>reply.Term</code>并退位的短时间内它其实还处在向其他节点发送<code>AppendEntries RPC</code>的循环内。假设 Follwer B 此前从 Leader A 接受来的<code>log[]</code>的<code>term</code>为<code>{1,1}</code>，在<code>D(currentTerm=2)</code>这个新 Leader 加入进来后它又从 D 这里接受了一个<code>term=2</code>的日志，那么它的<code>log[]</code>的<code>term</code>就变为<code>{1,1,2}</code>。到这里都没有问题。关键之处在于，如果 A 在退位后，也就是修改<code>state=Follower</code>之后没有退出发送<code>AppendEntries RPC</code>的循环，继续向其余节点赋值日志，会造成什么样的错误？A 曾经是<code>Leader</code>，在它退位前可能还有好多<code>term=1</code>的日志尚未赋值给其他节点。A 发现了更大的<code>reply.Term</code>后修改自身状态为<code>state=Follower, currentTerm=2</code>，此时如果不停止复制日志那么 Follower B 就会收到<code>args.Term=2</code>的<code>AppendEntries RPC</code>并接受<code>args.Entries</code>里的日志——但是这些日志已经落后了，因为<code>term=1</code>。此时 B 的<code>log[]</code>的<code>term</code>就可能是<code>{1,1,2,1,1}</code>——不满足单调不减。</p>
+<p>b. Yes</p>
+<p>c. Yes. 什么时候会出现<code>term</code>不连续的情况？</p>
+<ul>
+<li>经过了多轮选举</li>
+<li>赋值日志时检测到冲突，需要把包括冲突位置在内往后的日志全部删除</li>
+</ul>
+<p>d. No. 赋值日志时都是往后追加，不会出现空缺。</p>
+<p><img src="/2021/02/28/raft-exam/2.png" alt></p>
+<p>如果现在的 leader S1 把自己的日志全部同步到 followers，那么 S1 的全部日志都可以被 safely be applied to state machines。但是目前可能会有其他的节点因为网络延迟而收不到 S1 的心跳包，从而开始新的选举产生新的 leader。</p>
+<p>按照 leader 的选举算法</p>
+<p><img src="/2021/02/28/raft-exam/RequestVote.png" alt></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rf *Raft)</span> <span class="title">RequestVote</span><span class="params">(args *RequestVoteArgs, reply *RequestVoteReply)</span></span> &#123;</span><br><span class="line">    ......</span><br><span class="line">	<span class="keyword">if</span> args.Term == rf.currentTerm &#123;</span><br><span class="line">		lastLogIndex := rf.getLastLogIndex()</span><br><span class="line">		lastLogTerm := rf.getLogEntry(lastLogIndex).Term</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> rf.votedFor == <span class="number">-1</span> || rf.votedFor == args.CandidateId &#123;</span><br><span class="line">			<span class="keyword">if</span> args.LastLogTerm &gt; lastLogTerm ||</span><br><span class="line">				args.LastLogTerm == lastLogTerm &amp;&amp; args.LastLogIndex &gt;= lastLogIndex &#123;</span><br><span class="line">				rf.votedFor = args.CandidateId</span><br><span class="line">				reply.VoteGranted = <span class="literal">true</span></span><br><span class="line">				atomic.StoreInt32(&amp;rf.state, Follower)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	reply.Term = rf.currentTerm</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可知：</p>
+<p>S2 可能在新一轮选举中成为 leader，因为它的日志比 S3、S4 和 S5 更新，可以获得包括自己在内的4个节点的投票。S2 成为稳定的 leader 后，日志项<code>&lt;1,1&gt;,&lt;2,1&gt;,&lt;3,1&gt;,&lt;4,3&gt;</code>可以被 safely be applied to state machines。</p>
+<p>S3 如果发起新一轮选举，因为它的日志只比 S4 更新，所以不能获得足够的投票。S4 也一样。</p>
+<p>S5 可能在新一轮选举中成为 leader，因为它的日志必 S3 和 S4 更新，可以获得包括自己在内的3个节点的投票。S5 成为稳定的 leader 后，日志项<code>&lt;1,1&gt;,&lt;2,1&gt;,&lt;3,2&gt;,&lt;4,2&gt;,&lt;5,2&gt;,&lt;6,2&gt;</code>可以被 safely be applied to state machines。</p>
+<p>对上述结果取交集可知，能被 safely be applied to state machines 的日志项为<code>&lt;1,1&gt;,&lt;2,1&gt;</code>。</p>
+<p><img src="/2021/02/28/raft-exam/3.png" alt></p>
+<p>(a) No</p>
+<p><img src="/2021/02/28/raft-exam/log_matching.png" alt></p>
+<p><code>&lt;5,3&gt;</code>之前的日志和 leader 不同，不满足 <strong>Log Matching Property</strong>。<code>AppendEntries</code>对日志一致性的检查是通过<code>prevLogIndex</code>和<code>prevLogTerm</code>完成的，下面对 <strong>Log Matching Property</strong> 进行推导。假设 S1 和 S2 在<code>index=i</code>位置上有两条相同的日志，那么 S1 和 S2 上的这条日志一定是经过了<code>AppendEntries</code>的一致性检查后才得以被追加上去，即<code>prevLogIndex=i-1</code>位置上的日志和 leader 是匹配的，所以 S1 和 S2 在<code>index=i-1</code>位置上的两条日志是相同的。同理 S1 和 S2 在<code>index=1,...,i-2</code>位置上的日志都是相同的。</p>
+<p>(b) No</p>
+<p><code>&lt;6,5&gt;</code>之前的日志和 leader 不同，不满足 <strong>Log Matching Property</strong>。</p>
+<p>(c) Yes. (c)可能是<code>term=6</code>期间的 leader，但由于网络故障或网络分区而无法将<code>term=6</code>的日志项复制到其他节点。</p>
+<p>(d) No. <code>term</code>不满足单调递增。</p>
+<p>(e) Yes. (e)可能是<code>term=1</code>期间的 leader，但由于网络故障或网络分区而无法将<code>term=1</code>的日志项复制到其他节点。</p>
+<p><img src="/2021/02/28/raft-exam/4.png" alt></p>
+<p>No. 假设以下情形：</p>
+<p>leader 的日志：</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>term</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>follower S1 的日志：</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>term</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<p>leader 上保存的 S1 的<code>nextIndex=5</code>，故障导致<code>nextIndex</code>变成不等于5的一个数</p>
+<p><code>nextIndex=5</code>的时候<code>AppendEntries</code> RPC 的参数为：<code>prevLogIndex = nextIndex-1 = 4, prevLogTerm=2, entries=[&lt;5,3&gt;,&lt;6,3&gt;,&lt;7,4&gt;]</code></p>
+<p>按照这段代码分析 S1 如何处理日志：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> rf.getLogEntry(args.PrevLogIndex).Term != args.PrevLogTerm &#123;</span><br><span class="line">	rf.setConflictIndexAndTerm(args, reply)</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">reply.Success = <span class="literal">true</span></span><br><span class="line">index := args.PrevLogIndex + <span class="number">1</span></span><br><span class="line"><span class="keyword">for</span> _, entry := <span class="keyword">range</span> args.Entries &#123;</span><br><span class="line">	<span class="keyword">if</span> rf.getLogEntry(index).Term != entry.Term &#123;</span><br><span class="line">		rindex := rf.relativeIndex(index) - <span class="number">1</span> <span class="comment">// same as above</span></span><br><span class="line">		<span class="keyword">if</span> rindex &gt;= <span class="number">0</span> &amp;&amp; rindex &lt; <span class="built_in">len</span>(rf.logs) &#123;</span><br><span class="line">			rf.logs = rf.logs[:rindex]</span><br><span class="line">		&#125;</span><br><span class="line">		rf.logs = <span class="built_in">append</span>(rf.logs, entry)</span><br><span class="line">	&#125;</span><br><span class="line">	index++</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>prevLogIndex=4, prevLogTerm=2</code>可以通过一致性检查。S1 的日志在<code>index=5</code>往后的位置上都为空，因此日志项<code>entry</code>会依次追加上去。</p>
+<p>如果<code>nextIndex=2、3、4</code>导致<code>prevLogIndex=1、2、3</code>，由于 S1 在这几个位置上的日志项和 leader 相同，所以能够通过一致性检查。在追加日志项的时候遇到相同<code>index</code>、相同<code>term</code>的会直接跳过。所以追加到 S1 末尾的还是只有<code>&lt;5,3&gt;,&lt;6,3&gt;,&lt;7,4&gt;</code>。</p>
+<p>如果<code>nextIndex=1</code>导致<code>prevLogIndex=0, prevLogTerm=0, entries=[&lt;1,1&gt;,&lt;2,2&gt;,...,&lt;7,4&gt;]</code>，S1 的一致性检查依然能通过。S1 的日志项从<code>index=1</code>开始与<code>entries</code>进行比对，最终追加到末尾的还是<code>&lt;5,3&gt;,&lt;6,3&gt;,&lt;7,4&gt;</code>。</p>
+<p>如果<code>nextIndex &lt;= 0</code>导致<code>prevLogIndex &lt;= -1, prevLogTerm=0, entries=[]</code>，S1 的一致性检查通过，但无日志项可追加。leader 在<code>AppendEntries</code> RPC 返回<code>true</code>后推进<code>nextIndex</code>，经过多次<code>AppendEntries</code> RPC 调用最终将其推进到一个大于0的有效值，从而在后续的 RPC 调用中完成日志复制。</p>
+<p>如果<code>nextIndex=6、7</code>导致<code>prevLogIndex=5、6, prevLogTerm=3、4</code>，此时<code>entries</code>只包含“<code>&lt;5,3&gt;,&lt;6,3&gt;,&lt;7,4&gt;</code>”中的最后两个或最后一个，如果它们被追加到 S1 就会导致 leader 和 S1 的日志不一致。其实，在该情形下 S1 的一致性检查会失败，leader 在<code>AppendEntries</code> RPC 返回<code>false</code>后回退<code>nextIndex</code>到一个有效值，从而在后续的 RPC 调用中完成日志复制。</p>
+<p>如果<code>nextIndex &gt;= 8</code>导致<code>prevLogIndex &gt;= 7, prevLogTerm=0, entries=[]</code>，S1 的一致性检查通过，但无日志项可追加。leader 在<code>AppendEntries</code> RPC 返回<code>true</code>后推进<code>nextIndex</code>，但<code>nextIndex</code>会被一直往前推进，leader 的日志永远无法复制给 S1。<strong>这是我实现上的漏洞，由于测试中未涉及此情形所以被我忽略了。</strong>解决方法是：leader 发送<code>AppendEntries</code> RPC 的时候如果<code>prevLogIndex &gt; log.length</code>就将<code>prevLogTerm</code>设置成最后一条日志项的<code>term</code>，使得 follower 的一致性检查失败，然后 leader 就可以回退<code>nextIndex</code>。</p>
+<p>综上，如果 Raft 的实现没有漏洞，<code>nextIndex</code>的损坏不会影响系统的安全性。</p>
+<p><img src="/2021/02/28/raft-exam/5.png" alt></p>
+<p>每个 server 都处在不同的 datacenter 导致的问题就是 RPC 通信时延变长，如果沿用原来的 election timeout 就会导致 server 来不及接受 leader 的 heartbeats 就开始新的选举，所以应该增大 election timeout。</p>
+<p><img src="/2021/02/28/raft-exam/6.png" alt></p>
+<p>(a) No. 会导致一个节点在同一个任期内投票两次，导致集群中出现两个 leader。例如：</p>
+<p>在集群 {S1,S2,S3} 中，S1 和 S2 先后变成 candidate 发起选举，S3 先收到 S1 的<code>RequestVote</code> RPC 所以把票投给 S1，这样 S1 就收到它自己和 S3 的两个投票而成为<code>term=1</code>期间的 leader。此时来自 S2 的<code>RequestVote</code> RPC 还在赶往 S3 的路上，S3 宕机并重启恢复。S3 宕机前<code>votedFor=S1</code>，如果恢复<code>votedFor</code>时没出问题那么 S3 在收到 S2 的<code>RequestVote</code> RPC 时是不应该投票给 S2 的（因为<code>S3.votedFor=S1</code>）。假如 S3 没有成功恢复<code>votedFor</code>，它在收到 S3 的<code>RequestVote</code> RPC 时就会投票给 S2（因为<code>S3.votedFor=null</code>），这样 S2 就会成为<code>term=1</code>期间的另一个 leader。</p>
+<p>(b) No. 那些缺失的日志项不会重新从 leader 那儿获得，因为 leader 在向 followers 复制日志时是从<code>nextIndex</code>开始的。结果就是这个出问题的节点和大多数节点相比，它在相同 index 上向状态机应用了不同的日志。</p>
+<p><img src="/2021/02/28/raft-exam/7.png" alt></p>
+<p><del>No. 这个 old leader 的<code>term</code>肯定已经落后了，当它恢复与其他节点的通信后，其他节点发现 RPC 的参数<code>term</code>小于自身的<code>currentTerm</code>就会直接返回 false。</del></p>
+<p>我觉得这题问的不清楚，我理解的是：old leader 是否有可能向其他节点发送<code>AppendEntries</code> RPC 来让它们提交那些在新一轮选举开始前就已经存在的 old log entry ？如上所答，显然不行。</p>
+<p>正确答案给的例子是：S1 在任期内将<code>index=1,term=2</code>这条日志复制给了 S2、S3，当针对 S3 的<code>AppendEntries</code> RPC 成功返回后 S1 就从集群中掉线了。就在新一轮选举开始前（或者此时新 leader S3 已经当选），S1 还在执行 RPC 成功返回后的流程，此时它发现日志项<code>index=1,term=2</code>已被复制到大多数节点上，从而<code>commitIndex++</code>将其提交。也就是说，S1 作为 old leader，它是在提交自身的 log entry，并不是“向其他节点发送<code>AppendEntries</code> RPC 来让它们提交那些在新一轮选举开始前就已经存在的 old log entry”。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/02/28/raft-exam/" data-id="cko412q4k000at4rt1f4a4d6y" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/09/interview-%E8%9A%82%E8%9A%81%E9%9B%86%E5%9B%A2-%E6%95%B0%E5%AD%97%E6%8A%80%E6%9C%AF%E9%83%A8-2021-2-28/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          interview_蚂蚁集团-数字技术部_2021_2_28
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/12/17/MIT6-824-2020-Lab4B/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MIT6.824-2020-Lab4B</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">April 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/04/30/MySQL/">MySQL</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/27/CPU%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/">CPU分支预测对性能的影响</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/linux-IO/">linux IO</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/15/MIT6-824%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8FKV%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">MIT6.824的分布式KV存储系统的一致性问题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 l-iberty<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

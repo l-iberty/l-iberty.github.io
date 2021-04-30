@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>interview_腾讯_2021_3_9 | Welcome to l-iberty&#39;s blog ^_^</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="为什么要用 Raft 保证容错性？ Raft 不就是干这个的嘛……  只让 Leader 响应客户端请求有什么问题？Leader 挂了怎么办？在新的 Leader 选举出来这段时间内集群内没有 Leader，怎么让集群继续对外提供服务？ 没有 Leader 还叫 Raft 吗？Raft 集群没有 Leader 还能用？？？  CAP (一致性、可用性、分区容错性)，Raft 保证的是 CP应用 R">
+<meta property="og:type" content="article">
+<meta property="og:title" content="interview_腾讯_2021_3_9">
+<meta property="og:url" content="http://yoursite.com/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/index.html">
+<meta property="og:site_name" content="Welcome to l-iberty&#39;s blog ^_^">
+<meta property="og:description" content="为什么要用 Raft 保证容错性？ Raft 不就是干这个的嘛……  只让 Leader 响应客户端请求有什么问题？Leader 挂了怎么办？在新的 Leader 选举出来这段时间内集群内没有 Leader，怎么让集群继续对外提供服务？ 没有 Leader 还叫 Raft 吗？Raft 集群没有 Leader 还能用？？？  CAP (一致性、可用性、分区容错性)，Raft 保证的是 CP应用 R">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/%E6%96%87%E4%BB%B6%E9%A1%B5%E9%9D%A2%E7%BC%93%E5%86%B2%E9%98%9F%E5%88%97.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/linux-soft-hard-link-diff.png">
+<meta property="article:published_time" content="2021-03-09T14:39:47.000Z">
+<meta property="article:modified_time" content="2021-04-05T11:23:14.163Z">
+<meta property="article:author" content="l-iberty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/%E6%96%87%E4%BB%B6%E9%A1%B5%E9%9D%A2%E7%BC%93%E5%86%B2%E9%98%9F%E5%88%97.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Welcome to l-iberty&#39;s blog ^_^" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Welcome to l-iberty&#39;s blog ^_^</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-interview-腾讯-2021-3-9" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/" class="article-date">
+  <time datetime="2021-03-09T14:39:47.000Z" itemprop="datePublished">2021-03-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      interview_腾讯_2021_3_9
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="为什么要用-Raft-保证容错性？"><a href="#为什么要用-Raft-保证容错性？" class="headerlink" title="为什么要用 Raft 保证容错性？"></a>为什么要用 Raft 保证容错性？</h3><ul>
+<li>Raft 不就是干这个的嘛……</li>
+</ul>
+<h3 id="只让-Leader-响应客户端请求有什么问题？Leader-挂了怎么办？在新的-Leader-选举出来这段时间内集群内没有-Leader，怎么让集群继续对外提供服务？"><a href="#只让-Leader-响应客户端请求有什么问题？Leader-挂了怎么办？在新的-Leader-选举出来这段时间内集群内没有-Leader，怎么让集群继续对外提供服务？" class="headerlink" title="只让 Leader 响应客户端请求有什么问题？Leader 挂了怎么办？在新的 Leader 选举出来这段时间内集群内没有 Leader，怎么让集群继续对外提供服务？"></a>只让 Leader 响应客户端请求有什么问题？Leader 挂了怎么办？在新的 Leader 选举出来这段时间内集群内没有 Leader，怎么让集群继续对外提供服务？</h3><ul>
+<li>没有 Leader 还叫 Raft 吗？Raft 集群没有 Leader 还能用？？？</li>
+</ul>
+<h3 id="CAP-一致性、可用性、分区容错性-，Raft-保证的是-CP"><a href="#CAP-一致性、可用性、分区容错性-，Raft-保证的是-CP" class="headerlink" title="CAP (一致性、可用性、分区容错性)，Raft 保证的是 CP"></a>CAP (一致性、可用性、分区容错性)，Raft 保证的是 CP</h3><h3 id="应用-Raft-的开源软件有了解过吗？"><a href="#应用-Raft-的开源软件有了解过吗？" class="headerlink" title="应用 Raft 的开源软件有了解过吗？"></a>应用 Raft 的开源软件有了解过吗？</h3><ul>
+<li>etcd，分布式 KV 数据库</li>
+<li>tidb，分布式关系型数据库</li>
+<li>zookeeper，分布式协调服务框架，提供的服务：配置管理、命名管理、分布式锁、集群管理</li>
+</ul>
+<h3 id="LRU-如何实现？"><a href="#LRU-如何实现？" class="headerlink" title="LRU 如何实现？"></a>LRU 如何实现？</h3><ul>
+<li>略</li>
+</ul>
+<h3 id="线程通信方式？"><a href="#线程通信方式？" class="headerlink" title="线程通信方式？"></a>线程通信方式？</h3><ul>
+<li>信号量、条件变量、管道、共享内存、socket</li>
+</ul>
+<h3 id="并发线程访问共享变量只能加锁吗？（不是，还有原子操作）原子操作怎么实现？信号量、互斥量、条件变量怎么实现？"><a href="#并发线程访问共享变量只能加锁吗？（不是，还有原子操作）原子操作怎么实现？信号量、互斥量、条件变量怎么实现？" class="headerlink" title="并发线程访问共享变量只能加锁吗？（不是，还有原子操作）原子操作怎么实现？信号量、互斥量、条件变量怎么实现？"></a>并发线程访问共享变量只能加锁吗？（不是，还有原子操作）原子操作怎么实现？信号量、互斥量、条件变量怎么实现？</h3><ul>
+<li>信号量的实现：信号量维护一个线程的等待队列。信号量有一个初值<code>S</code>。信号量有两种操作：释放和等待。线程“等待”信号量时<code>S--</code>，如果<code>S &lt; 0</code>就将当前线程添加到信号量的等待队列中，否则线程继续执行。线程“释放”信号量时<code>S++</code>，如果<code>S &lt;= 0</code>就说明有别的线程在等待该信号量，所以要唤醒等待队列中的一个线程。</li>
+<li>互斥量的实现：初值<code>S=1</code>的信号量</li>
+<li>条件变量的实现：条件变量依赖于互斥量。在C++11的实现中，<code>cv.wait()</code>之前线程需要在<code>mutex</code>上获得锁，<code>cv.wait()</code>首先让线程释放原先在<code>mutex</code>上获得的锁，然后在事件对象上等待别的线程通过<code>cv.notify()</code>发送过来的信号，信号到达后重新获取在<code>mutex</code>上的锁，最后<code>cv.wait()</code>返回。所以线程在调用<code>cv.notify()</code>时不能在<code>mutex</code>上持有锁，否则另一个线程的<code>cv.wait()</code>无法返回，造成死锁。</li>
+<li>原子操作的实现：<ul>
+<li>简单的原子操作使用单条指令即可实现，例如<code>INC</code>、<code>DEC</code>、<code>XCHG</code></li>
+<li>复杂的原子操作需要包含多条指令，执行过程中可能出现任务切换、中断处理等，需要使用<strong>Spin Lock</strong>（busy-wait-loop）方式，不会导致线程的挂起、切换)。但是该方法在多核处理器下不能阻止其他 CPU 核对相关内存的访问。早期的架构中通过<code>LOCK</code>指令前缀锁住总线，从而阻止其他 CPU 核对整个内存的访问，显然这种方法是非常低效的。从 Pentium Pro 开始，<code>LOCK</code>只会阻塞其他 CPU 核对相关内存的缓存块的访问.</li>
+</ul>
+</li>
+</ul>
+<h3 id="多线程、多进程，如何取舍？"><a href="#多线程、多进程，如何取舍？" class="headerlink" title="多线程、多进程，如何取舍？"></a>多线程、多进程，如何取舍？</h3><ul>
+<li>考虑线程和进程的创建开销，不同的 OS 开销不同</li>
+<li>在多核架构下建议使用多进程。因为进程是资源分配的基本单位，每个进程的资源相互独立，当每个 CPU 核心运行一个进程的时候，由于进程之间不存在上下文切换，所以多个进程的资源不会在多个 CPU 核心之间复制。如果每个 CPU 核心运行一个线程，由于每个线程需要一些共享资源（多个线程属于一个进程），线程调度的时候这些资源需要从一个 CPU 核心复制到另一个核心，带来了额外的开销。</li>
+</ul>
+<h3 id="孤儿进程、僵尸进程的区别及危害？"><a href="#孤儿进程、僵尸进程的区别及危害？" class="headerlink" title="孤儿进程、僵尸进程的区别及危害？"></a>孤儿进程、僵尸进程的区别及危害？</h3><ul>
+<li>一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被<code>init</code>进程收养，并由init进程对它们完成状态收集工作。孤儿进程没有危害。</li>
+<li>一个进程使用<code>fork()</code>创建子进程，如果子进程退出，而父进程并没有调用<code>wait()</code>获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。僵尸进程会占用系统资源。</li>
+</ul>
+<h3 id="用户线程、内核线程的区别？"><a href="#用户线程、内核线程的区别？" class="headerlink" title="用户线程、内核线程的区别？"></a>用户线程、内核线程的区别？</h3><ul>
+<li>略</li>
+</ul>
+<h3 id="C-的线程是内核还是用户线程？"><a href="#C-的线程是内核还是用户线程？" class="headerlink" title="C++的线程是内核还是用户线程？"></a>C++的线程是内核还是用户线程？</h3><ul>
+<li>内核级</li>
+</ul>
+<h3 id="C-的线程怎么实现？"><a href="#C-的线程怎么实现？" class="headerlink" title="C++的线程怎么实现？"></a>C++的线程怎么实现？</h3><h3 id="文件-I-O-的过程？open-read-write-close-的底层实现"><a href="#文件-I-O-的过程？open-read-write-close-的底层实现" class="headerlink" title="文件 I/O 的过程？open, read/write, close 的底层实现"></a>文件 I/O 的过程？open, read/write, close 的底层实现</h3><ul>
+<li>read<br>找到<code>inode</code>结构（<code>file</code>结构 -&gt; <code>dentry</code>结构 -&gt; <code>inode</code>结构）（<code>file</code>结构表示文件读写的上下文，例如当前读写位置、访问模式、引用计数等；<code>dentry</code>结构，目录项，描述文件在 VFS 目录树中的信息；<code>inode</code>结构是文件在 VFS 中的索引节点），<code>inode</code>结构记录了文件内容在内存中所对应的缓冲页面。如果缓冲页面不再内存中，就从设备上读入；否则直接读取缓冲页面。这里涉及 Linux 的文件预读技术：当发生顺序读取时，系统会以页面为单位读取比应用程序所要求的更多的数据，将其缓存到<code>inode</code>结构所记录的缓冲页面中。缓冲页面的管理使用 LRU 替换策略。</li>
+<li>write<br>如前所述，如果欲访问的文件内容已经在缓冲页面中，写操作只是把数据写到缓冲页面中，当 CPU 较空闲时会调度一个内核线程<code>kflushd</code>完成刷盘。另外，应用程序还可以调用<code>sync()</code>强制调度内核线程<code>kflushd</code>将缓冲页面落盘。</li>
+<li>open<br>进程有一个“打开文件表”，其中的指针指向打开文件的<code>file</code>结构。假设文件已存在，“打开”动作就是根据路径名找到<code>dentry</code>结构、创建<code>file</code>结构并将其指针保存到进程的“打开文件表”，其在表中的索引就是文件描述符fd。</li>
+<li>close<br>(1) 清除文件在进程的打开文件表中占据的位置 (将索引为fd的表项置为NULL)<br>(2) 将<code>file</code>结构中的引用计数减1，如果引用计数减至0就释放<code>file</code>结构</li>
+</ul>
+<p><img src="/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/%E6%96%87%E4%BB%B6%E9%A1%B5%E9%9D%A2%E7%BC%93%E5%86%B2%E9%98%9F%E5%88%97.png" alt></p>
+<p><strong>补充：软链接 vs. 硬链接</strong><br>(1) 硬链接通过与源文件共享 inode 号进行链接。即，硬链接与源文件不同名，但都指向同一个inode。硬链接的作用是允许一个文件有多个有效路径名，这样用户就可以建立硬链接到重要文件，以防止“误删”，因为只有当 inode 的引用计数被减至0时文件才会被真正删除。<br>(2) 软链接存放的是源文件的路径，它是一个独立的文件，类似于 Windows 的快捷方式。</p>
+<p><img src="/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/linux-soft-hard-link-diff.png" alt></p>
+<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><ul>
+<li>Leetcode 239，用单调队列实现O(N)的解法</li>
+<li>N 个并发线程，交替打印 M 个数。例如 N=4, M=8<br>Thread1-0<br>Thread2-1<br>Thread3-2<br>Thread4-3<br>Thread1-4<br>Thread2-5<br>Thread3-6<br>Thread4-7</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n, m;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"n,m? "</span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cin</span> &gt;&gt; n &gt;&gt; m;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; x&#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; *signal = <span class="keyword">new</span> <span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt;[n];</span><br><span class="line">  <span class="built_in">std</span>::mutex *mu = <span class="keyword">new</span> <span class="built_in">std</span>::mutex[n];</span><br><span class="line">  <span class="built_in">std</span>::condition_variable *cv = <span class="keyword">new</span> <span class="built_in">std</span>::condition_variable[n];</span><br><span class="line">  <span class="built_in">std</span>::thread *thds = <span class="keyword">new</span> <span class="built_in">std</span>::thread[n];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    signal[i].store(<span class="literal">false</span>);</span><br><span class="line">    thds[i] = <span class="built_in">std</span>::thread ([&amp;, i] &#123; <span class="comment">// 变量i以值的形式捕获, 其余变量以引用形式捕获</span></span><br><span class="line">      <span class="keyword">while</span> (x.load() &lt; m) &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mu[i]);</span><br><span class="line">        cv[i].wait(lock, [&amp;] &#123;</span><br><span class="line">          <span class="keyword">return</span> signal[i].load();</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Block itself.</span></span><br><span class="line">        signal[i].store(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (x.load() &lt; m) &#123;</span><br><span class="line">          <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Thread-"</span> &lt;&lt; i + <span class="number">1</span> &lt;&lt; <span class="string">" "</span></span><br><span class="line">            &lt;&lt; x.fetch_add(<span class="number">1</span>) &lt;&lt; <span class="string">"\n"</span>;</span><br><span class="line">          <span class="built_in">std</span>::this_thread::sleep_for(<span class="built_in">std</span>::chrono::milliseconds(<span class="number">100</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Wake up the next thread.</span></span><br><span class="line">        signal[(i + <span class="number">1</span>) % n].store(<span class="literal">true</span>);</span><br><span class="line">        cv[(i + <span class="number">1</span>) % n].notify_one();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Start the first thread.</span></span><br><span class="line">  signal[<span class="number">0</span>].store(<span class="literal">true</span>);</span><br><span class="line">  cv[<span class="number">0</span>].notify_one();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    thds[i].join();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span>[] signal;</span><br><span class="line">  <span class="keyword">delete</span>[] mu;</span><br><span class="line">  <span class="keyword">delete</span>[] cv;</span><br><span class="line">  <span class="keyword">delete</span>[] thds;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/03/09/interview-%E8%85%BE%E8%AE%AF-2021-3-9/" data-id="cko412q4f0007t4rtgd8phist" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/12/interview-%E8%85%BE%E8%AE%AF-2021-3-11/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          interview_腾讯_2021_3_11
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/03/09/interview-%E8%9A%82%E8%9A%81%E9%9B%86%E5%9B%A2-%E6%95%B0%E5%AD%97%E6%8A%80%E6%9C%AF%E9%83%A8-2021-2-28/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">interview_蚂蚁集团-数字技术部_2021_2_28</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">April 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/04/30/MySQL/">MySQL</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/27/CPU%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D/">CPU分支预测对性能的影响</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/linux-IO/">linux IO</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/15/MIT6-824%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8FKV%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/">MIT6.824的分布式KV存储系统的一致性问题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 l-iberty<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
