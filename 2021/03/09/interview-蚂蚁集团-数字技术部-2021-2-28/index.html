@@ -15,7 +15,7 @@
 <meta property="og:description" content="丁丁识字项目 为什么使用 MongoDB？为什么分库？是否有分表？  MIT 6.824 简单说一下 raft 为什么要引入分片？负载均衡，否则所有的 key&#x2F;value 数据都会落在一个集群上 是否考虑过集群的 TPS (每秒事务处理量(TransactionPerSecond))？如何处理海量的客户端请求？  CMU 15.445 Buffer Pool Manager 如果面临宕机要怎么做？">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-03-09T14:39:14.000Z">
-<meta property="article:modified_time" content="2021-03-10T11:12:56.436Z">
+<meta property="article:modified_time" content="2021-05-25T01:31:13.400Z">
 <meta property="article:author" content="l-iberty">
 <meta name="twitter:card" content="summary">
   
@@ -115,7 +115,7 @@
 </li>
 <li>MVCC 的出现就是 DBMS 不满用悲观锁解决 RW 冲突问题，为了提升性能而提出的解决方案。所以在 DBMS 中可以形成两个组合：<ul>
 <li>MVCC + 悲观锁 (例如 2PL)<br>MVCC 解决 RW 冲突，悲观锁解决 WW 冲突</li>
-<li>MVCC + 乐观锁<br>MVCC 解决 RW 冲突，悲观锁解决 WW 冲突</li>
+<li>MVCC + 乐观锁<br>MVCC 解决 RW 冲突，乐观锁解决 WW 冲突</li>
 </ul>
 </li>
 </ul>
@@ -133,7 +133,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2021/03/09/interview-%E8%9A%82%E8%9A%81%E9%9B%86%E5%9B%A2-%E6%95%B0%E5%AD%97%E6%8A%80%E6%9C%AF%E9%83%A8-2021-2-28/" data-id="ckoa7frvz0009oortatj2bam1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2021/03/09/interview-%E8%9A%82%E8%9A%81%E9%9B%86%E5%9B%A2-%E6%95%B0%E5%AD%97%E6%8A%80%E6%9C%AF%E9%83%A8-2021-2-28/" data-id="ckp3d9fat0006gwrtczp557vg" class="article-share-link">Share</a>
       
       
     </footer>
